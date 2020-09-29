@@ -1,0 +1,150 @@
+@charset "UTF-8";
+@import url("https://use.fontawesome.com/releases/v5.14.0/css/all.css");
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400&display=swap");
+* {
+  font-family: "Open Sans", sans-serif;
+  box-sizing: border-box; }
+
+html,
+body {
+  margin: 0;
+  padding: 0; }
+
+#main-container {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  padding: 0.9em; }
+
+#elevator-btn-container {
+  display: grid;
+  grid-template-columns: 50px 50px;
+  grid-auto-rows: 50px;
+  grid-auto-flow: dense;
+  gap: 1em; }
+
+.cart-button {
+  background-color: #fff;
+  border: 2px solid black;
+  border-radius: 50%;
+  padding: 0;
+  grid-column: 1;
+  font-size: 1.8rem;
+  cursor: pointer; }
+  .cart-button:hover, .cart-button.selected {
+    background-color: #0F5499;
+    color: white; }
+  .cart-button:nth-child(odd) {
+    grid-column: 2; }
+
+#inside-elevator-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr; }
+  #inside-elevator-container #elevator-passenger-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-start; }
+    #inside-elevator-container #elevator-passenger-list .elevator-passenger {
+      display: inline-block;
+      border: 2px solid #0F5499;
+      border-radius: 5px;
+      padding: 5px 10px;
+      color: #0F5499;
+      cursor: pointer; }
+      #inside-elevator-container #elevator-passenger-list .elevator-passenger:hover, #inside-elevator-container #elevator-passenger-list .elevator-passenger.selected {
+        color: #fff;
+        background-color: #0F5499; }
+
+#add-person-container form {
+  display: flex;
+  justify-content: space-between;
+  width: 415px; }
+
+#select-container {
+  position: relative;
+  width: 110px;
+  background-color: #0F5499;
+  border-radius: 5px;
+  z-index: 20; }
+  #select-container .input-title {
+    position: absolute;
+    top: 5px;
+    left: 10px;
+    font-size: 0.83rem;
+    color: #fff;
+    text-transform: uppercase; }
+  #select-container::after {
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    font-size: 1.5rem;
+    content: "";
+    color: #fff;
+    display: inline-block;
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    z-index: -1; }
+  #select-container select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border: 0;
+    width: 100%;
+    height: 100%;
+    background-color: transparent;
+    font-size: 1rem;
+    color: #fff;
+    padding: 27px 5px 0 5px; }
+
+.input-container {
+  display: inline-block;
+  background-color: #0F5499;
+  border-radius: 5px;
+  padding: 5px 10px; }
+  .input-container .input-title {
+    display: block;
+    padding-bottom: 3px;
+    font-size: 0.83rem;
+    color: #fff;
+    text-transform: uppercase; }
+  .input-container .input-field {
+    border: 0;
+    border-bottom: 2px solid #fff;
+    color: #fff;
+    background-color: inherit;
+    font-size: 1rem; }
+
+#add-person-btn {
+  display: inline-block;
+  border-radius: 5px;
+  color: #fff;
+  background-color: #0F5499;
+  padding: 8px;
+  font-size: 1.3rem;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer; }
+
+#people-list {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px; }
+  #people-list .person {
+    display: flex;
+    gap: 10px;
+    align-items: center; }
+    #people-list .person .person-info {
+      font-size: 1.5rem;
+      min-width: 115px; }
+    #people-list .person .person-btn-container {
+      display: flex;
+      flex-direction: column;
+      gap: 5px; }
+      #people-list .person .person-btn-container .person-elev-btn {
+        display: block;
+        height: 30px;
+        cursor: pointer; }
+
+/*# sourceMappingURL=style.css.map */
