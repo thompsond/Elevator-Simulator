@@ -15,7 +15,7 @@ body
 
 #main-container
   display: grid
-  grid-template-columns: repeat(3, 1fr)
+  grid-template-columns: 1.5fr 1fr 1.5fr
   padding: 0.9em
 
 #elevator-btn-container
@@ -59,6 +59,34 @@ body
       &.selected
         color: #fff
         background-color: $blue
+
+#elevator-display-container
+  display: grid
+  grid-template-columns: 1fr minmax(80px, 1fr)
+  padding-right: 30px
+  gap: 10px
+  #elevator-display
+    display: flex
+    flex-direction: column
+    .elevator-display-passenger-list
+      display: flex
+      align-items: flex-end
+      gap: 5px
+      border-bottom: 10px solid black
+      .elevator-display-passenger
+        font-size: 4em
+        margin-bottom: -5px
+  #elevator-wrapper
+    #elevator
+      position: relative
+      #elevator-frame
+        position: absolute
+      .door
+        position: absolute
+      #left-door
+        left: 0
+      #right-door
+        right: 0
 
 #add-person-container
   form

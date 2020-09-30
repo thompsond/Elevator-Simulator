@@ -1,6 +1,8 @@
 import React, { Component } from 'react'
 import { LandingCall } from './LandingCall'
 import { CallDirection } from './includes'
+import arrow_up from '../images/arrow_up.png'
+import arrow_down from '../images/arrow_down.png'
 
 export default class PersonFloorButtonGroup extends Component {
     static BtnType = {
@@ -15,19 +17,20 @@ export default class PersonFloorButtonGroup extends Component {
 
     render() {
         return (
-            <div class="person-btn-container">
-                <img src="images/arrow-up.png" alt="up button" class="person-elev-btn person-up-btn" onClick={this.btnClickListener} btnType={PersonFloorButtonGroup.BtnType.UP} />
-                <img src="images/arrow-down.png" alt="down button" class="person-elev-btn person-down-btn" onClick={this.btnClickListener} btnType={PersonFloorButtonGroup.BtnType.DOWN} />
+            <div className="person-btn-container">
+                <img src={arrow_up} alt="up button" className="person-elev-btn person-up-btn" onClick={this.btnClickListener} btntype={PersonFloorButtonGroup.BtnType.UP} />
+                <img src={arrow_down} alt="down button" className="person-elev-btn person-down-btn" onClick={this.btnClickListener} btntype={PersonFloorButtonGroup.BtnType.DOWN} />
             </div>
         )
     }
 
     btnClickListener(event) {
+        let elevator = this.props.elevator;
         let type = event.target.getAttribute('btnType');
         if (type === PersonFloorButtonGroup.BtnType.UP) {
-            this.elevator.move(new LandingCall(this, CallDirection.UP));
+            elevator.addCall(new LandingCall(this.props.person, CallDirection.UP));
         } else {
-            this.elevator.move(new LandingCall(this, CallDirection.DOWN));
+            elevator.addCall(new LandingCall(this.props.person, CallDirection.DOWN));
         }
     }
 }

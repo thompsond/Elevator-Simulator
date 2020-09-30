@@ -2,28 +2,21 @@ import React, { Component } from 'react'
 import PersonFloorButtonGroup from './PersonFloorButtonGroup';
 
 export default class Person extends Component {
-    name;
-    currentFloorNum;
-    elevator;
-    
-    
     constructor(props) {
         super();
-        this.name = props.name;
-        this.currentFloorNum = props.currentFloorNum;
-        this.elevator = props.elevator;
+        this.state = ({
+            name: props.name,
+            currentFloorNum: props.currentFloorNum,
+            elevator: props.elevator
+        });
     }
-
+    
     render() {
         return (
             <div className="person">
-                <span class="person-info">{this.name + " " + this.currentFloorNum}</span>
-                <PersonFloorButtonGroup/>
+                <span className="person-info">{this.state.name + " " + this.state.currentFloorNum}</span>
+                <PersonFloorButtonGroup person={this} elevator={this.state.elevator}/>
             </div>
         )
-    }
-
-    setCurrentFloorNum(num) {
-        this.currentFloorNum = num;
     }
 }

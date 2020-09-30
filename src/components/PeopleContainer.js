@@ -4,7 +4,7 @@ import Person from './Person';
 export default class PeopleContainer extends Component {
     constructor(props) {
         super();
-        this.addPersonListener = this.addPersonListener.bind(this);
+        this.addPersonButtonListener = this.addPersonButtonListener.bind(this);
         this.handleNameChange = this.handleNameChange.bind(this);
         this.handleFloorChange = this.handleFloorChange.bind(this);
         this.state = ({
@@ -34,7 +34,7 @@ export default class PeopleContainer extends Component {
                                     {floorList}
                                 </select>
                             </div>
-                            <input type="submit" value="Add" id="add-person-btn" onClick={this.addPersonListener}/>
+                            <input type="submit" value="Add" id="add-person-btn" onClick={this.addPersonButtonListener}/>
                 </form>
                         </div>
                         <div id="people-list">{this.state.peopleList}</div>
@@ -50,15 +50,20 @@ export default class PeopleContainer extends Component {
         this.setState({floor: event.target.value});
     }
 
-    addPersonListener(event) {
+    addPersonButtonListener(event) {
         event.preventDefault();
-        this.setState(state => {
-            const list = state.peopleList.add(<Person name={this.state.name} currentFloorNum={this.state.floor}/>);
-            return {
-                list,
-                value: ''
-            }
+        let name = this.state.name.trim();
+        if(name === "")  {
+            alert("A name is required");
+            return;
+        }
+        let elevator = this.props.elevator;
+        let person = <Person name={name} currentFloorNum={this.state.floor} key={this.state.name} elevator={elevator}/>;
+        this.setState((state, props) => {
+            const list = state.peopleList.add(person);
+            return { peopleList: list, name: '', floor: 1 };
         });
+        elevator.addPerson(person);
         document.getElementById('add-person-form').reset();
     }
 }

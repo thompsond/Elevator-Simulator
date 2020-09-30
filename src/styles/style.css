@@ -12,7 +12,7 @@ body {
 
 #main-container {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1.5fr 1fr 1.5fr;
   padding: 0.9em; }
 
 #elevator-btn-container {
@@ -54,6 +54,33 @@ body {
       #inside-elevator-container #elevator-passenger-list .elevator-passenger:hover, #inside-elevator-container #elevator-passenger-list .elevator-passenger.selected {
         color: #fff;
         background-color: #0F5499; }
+
+#elevator-display-container {
+  display: grid;
+  grid-template-columns: 1fr minmax(80px, 1fr);
+  padding-right: 30px;
+  gap: 10px; }
+  #elevator-display-container #elevator-display {
+    display: flex;
+    flex-direction: column; }
+    #elevator-display-container #elevator-display .elevator-display-passenger-list {
+      display: flex;
+      align-items: flex-end;
+      gap: 5px;
+      border-bottom: 10px solid black; }
+      #elevator-display-container #elevator-display .elevator-display-passenger-list .elevator-display-passenger {
+        font-size: 4em;
+        margin-bottom: -5px; }
+  #elevator-display-container #elevator-wrapper #elevator {
+    position: relative; }
+    #elevator-display-container #elevator-wrapper #elevator #elevator-frame {
+      position: absolute; }
+    #elevator-display-container #elevator-wrapper #elevator .door {
+      position: absolute; }
+    #elevator-display-container #elevator-wrapper #elevator #left-door {
+      left: 0; }
+    #elevator-display-container #elevator-wrapper #elevator #right-door {
+      right: 0; }
 
 #add-person-container form {
   display: flex;
