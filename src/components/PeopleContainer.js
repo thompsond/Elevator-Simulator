@@ -10,14 +10,14 @@ export default class PeopleContainer extends Component {
         this.state = ({
             peopleList: new Set(),
             name: "",
-            floor: "1"
+            floor: props.elevator.props.numFloors
         });
     }
 
     render() {
         let elevator = this.props.elevator;
         let floorList = [];
-        for (let i = 1; i <= parseInt(elevator.props.numFloors); i++) {
+        for (let i = parseInt(elevator.props.numFloors); i > 0; i--) {
             floorList.push(<option value={i} key={i}>{i}</option>);
         }
         return (
@@ -61,7 +61,8 @@ export default class PeopleContainer extends Component {
         let person = <Person name={name} currentFloorNum={this.state.floor} key={this.state.name} elevator={elevator}/>;
         this.setState((state, props) => {
             const list = state.peopleList.add(person);
-            return { peopleList: list, name: '', floor: 1 };
+            // Reset the state name and floor
+            return { peopleList: list, name: '', floor: elevator.props.numFloors };
         });
         elevator.addPerson(person);
         document.getElementById('add-person-form').reset();

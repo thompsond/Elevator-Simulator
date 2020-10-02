@@ -70,6 +70,7 @@ body
     flex-direction: column
     .elevator-display-passenger-list
       display: flex
+      flex-direction: row-reverse
       align-items: flex-end
       gap: 5px
       border-bottom: 10px solid black
@@ -80,13 +81,16 @@ body
     #elevator
       position: relative
       #elevator-frame
-        position: absolute
+        position: relative
+        z-index: 1000
       .door
         position: absolute
       #left-door
         left: 0
+        z-index: 80
       #right-door
         right: 0
+        z-index: 81
 
 #add-person-container
   form
@@ -172,11 +176,23 @@ body
     .person-info
       font-size: 1.5rem
       min-width: 115px
-    .person-btn-container
+    .person-btn-wrapper
       display: flex
       flex-direction: column
       gap: 5px
-      .person-elev-btn
-        display: block
-        height: 30px
-        cursor: pointer
+      position: relative
+      .person-btn-container
+        .person-elev-btn
+          display: block
+          height: 30px
+        .hover-img
+          display: none
+          position: absolute
+          left: 0
+        &:hover
+          .hover-img
+            display: inline
+            &.hover-up-img
+              top: 0
+            &.hover-down-img
+              bottom: 0

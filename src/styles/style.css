@@ -65,6 +65,7 @@ body {
     flex-direction: column; }
     #elevator-display-container #elevator-display .elevator-display-passenger-list {
       display: flex;
+      flex-direction: row-reverse;
       align-items: flex-end;
       gap: 5px;
       border-bottom: 10px solid black; }
@@ -74,13 +75,16 @@ body {
   #elevator-display-container #elevator-wrapper #elevator {
     position: relative; }
     #elevator-display-container #elevator-wrapper #elevator #elevator-frame {
-      position: absolute; }
+      position: relative;
+      z-index: 1000; }
     #elevator-display-container #elevator-wrapper #elevator .door {
       position: absolute; }
     #elevator-display-container #elevator-wrapper #elevator #left-door {
-      left: 0; }
+      left: 0;
+      z-index: 80; }
     #elevator-display-container #elevator-wrapper #elevator #right-door {
-      right: 0; }
+      right: 0;
+      z-index: 81; }
 
 #add-person-container form {
   display: flex;
@@ -165,13 +169,23 @@ body {
     #people-list .person .person-info {
       font-size: 1.5rem;
       min-width: 115px; }
-    #people-list .person .person-btn-container {
+    #people-list .person .person-btn-wrapper {
       display: flex;
       flex-direction: column;
-      gap: 5px; }
-      #people-list .person .person-btn-container .person-elev-btn {
+      gap: 5px;
+      position: relative; }
+      #people-list .person .person-btn-wrapper .person-btn-container .person-elev-btn {
         display: block;
-        height: 30px;
-        cursor: pointer; }
+        height: 30px; }
+      #people-list .person .person-btn-wrapper .person-btn-container .hover-img {
+        display: none;
+        position: absolute;
+        left: 0; }
+      #people-list .person .person-btn-wrapper .person-btn-container:hover .hover-img {
+        display: inline; }
+        #people-list .person .person-btn-wrapper .person-btn-container:hover .hover-img.hover-up-img {
+          top: 0; }
+        #people-list .person .person-btn-wrapper .person-btn-container:hover .hover-img.hover-down-img {
+          bottom: 0; }
 
 /*# sourceMappingURL=style.css.map */
