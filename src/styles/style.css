@@ -15,6 +15,10 @@ body {
   grid-template-columns: 1.5fr 1fr 1.5fr;
   padding: 0.9em; }
 
+.description {
+  text-align: center;
+  margin: 0 0 12px 0; }
+
 #elevator-btn-container {
   display: grid;
   grid-template-columns: 50px 50px;
@@ -54,6 +58,9 @@ body {
       #inside-elevator-container #elevator-passenger-list .elevator-passenger:hover, #inside-elevator-container #elevator-passenger-list .elevator-passenger.selected {
         color: #fff;
         background-color: #0F5499; }
+      #inside-elevator-container #elevator-passenger-list .elevator-passenger .person-info {
+        color: inherit;
+        background-color: inherit; }
 
 #elevator-display-container {
   display: grid;

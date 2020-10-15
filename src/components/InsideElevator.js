@@ -15,12 +15,22 @@ export default class InsideElevator extends Component {
 
     render() {
         return (
-            <div id="inside-elevator-container">
-                <div id="elevator-passenger-list"></div>
-                <div id="elevator-btn-container">
-                    {this.cartBtns}
+            <div id="inside-elevator-wrapper">
+                <h2 className="description">Inside Elevator</h2>
+                <p className="description">Choose a passenger and a destination floor</p>
+                <div id="inside-elevator-container">
+                    <div id="elevator-passenger-list">
+                        {Array.from(this.state.peopleList)}
+                    </div>
+                    <div id="elevator-btn-container">
+                        {this.cartBtns}
+                    </div>
                 </div>
             </div>
         )
+    }
+
+    update = (map) => {
+        this.setState({peopleList: Array.from(map, (key, value) => { return key[1]; })});
     }
 }

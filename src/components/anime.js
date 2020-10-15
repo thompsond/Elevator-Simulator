@@ -5,7 +5,7 @@
  * animejs.com
  */
 
-'use strict';
+
 
 // Defaults
 
@@ -388,7 +388,7 @@ function hslToRgba(hslValue) {
         return p;
     }
     var r, g, b;
-    if (s == 0) {
+    if (s === 0) {
         r = g = b = l;
     } else {
         var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
@@ -468,7 +468,7 @@ function getElementTransforms(el) {
     var reg = /(\w+)\(([^)]*)\)/g;
     var transforms = new Map();
     var m;
-    while (m = reg.exec(str)) { transforms.set(m[1], m[2]); }
+    while ((m = reg.exec(str)) !== null) { transforms.set(m[1], m[2]); }
     return transforms;
 }
 

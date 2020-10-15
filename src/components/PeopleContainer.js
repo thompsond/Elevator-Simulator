@@ -4,11 +4,8 @@ import Person from './Person';
 export default class PeopleContainer extends Component {
     constructor(props) {
         super();
-        this.addPersonButtonListener = this.addPersonButtonListener.bind(this);
-        this.handleNameChange = this.handleNameChange.bind(this);
-        this.handleFloorChange = this.handleFloorChange.bind(this);
         this.state = ({
-            peopleList: new Set(),
+            peopleList: [],
             name: "",
             floor: props.elevator.props.numFloors
         });
@@ -35,22 +32,22 @@ export default class PeopleContainer extends Component {
                                 </select>
                             </div>
                             <input type="submit" value="Add" id="add-person-btn" onClick={this.addPersonButtonListener}/>
-                </form>
-                        </div>
-                        <div id="people-list">{this.state.peopleList}</div>
+                    </form>
+                </div>
+                <div id="people-list">{this.state.peopleList}</div>
         </div>
         )
     }
 
-    handleNameChange(event) {
+    handleNameChange = (event) => {
         this.setState({name: event.target.value});
     }
 
-    handleFloorChange(event) {
+    handleFloorChange = (event) => {
         this.setState({floor: event.target.value});
     }
 
-    addPersonButtonListener(event) {
+    addPersonButtonListener = (event) => {
         event.preventDefault();
         let name = this.state.name.trim();
         if(name === "")  {
@@ -58,13 +55,15 @@ export default class PeopleContainer extends Component {
             return;
         }
         let elevator = this.props.elevator;
-        let person = <Person name={name} currentFloorNum={this.state.floor} key={this.state.name} elevator={elevator}/>;
         this.setState((state, props) => {
-            const list = state.peopleList.add(person);
             // Reset the state name and floor
-            return { peopleList: list, name: '', floor: elevator.props.numFloors };
+            return { name: '', floor: elevator.props.numFloors };
         });
-        elevator.addPerson(person);
+        elevator.addPerson(name, this.state.floor);
         document.getElementById('add-person-form').reset();
+    }
+
+    update = (map) => {
+        this.setState({peopleList: Array.from(map, (key, value) => { return key[1]; })});
     }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Floor from './Floor'
 import { FastPriorityQueue } from './FastPriorityQueue'
 import { LandingCall } from './LandingCall'
-import { CallDirection } from './includes'
+import { CallDirection, ElevatorStatus } from './includes'
 import { CartCall } from '../../../Elevator Simulator/js/CartCall'
 import PeopleContainer from './PeopleContainer'
 import InsideElevator from './InsideElevator'
@@ -10,23 +10,28 @@ import door_left from '../images/door_left.svg'
 import door_right from '../images/door_right.svg'
 import elevator_frame from '../images/elevator_frame.svg'
 import {anime} from './anime'
+import Person from './Person'
+import InsideElevatorPerson from './InsideElevatorPerson'
 
 export default class Elevator extends Component {
     constructor(props) {
         super();
         this.state = ({
             floors: [],
-            floorMap: new Map(),
-            currentFloor: props.numFloors,
-            destinationFloor: props.numFloors,
-            names: new Set(),
-            upQueue: new FastPriorityQueue((a, b) => { return a > b; }),
-            downQueue: new FastPriorityQueue((a, b) => { return a > b; })
+            floorMap: new Map()
         });
         let numOfFloors = props.numFloors;
         this.refsArray = [];
+        this.insideElevatorMap = new Map();
+        this.peopleContainerMap = new Map();
         this.insideElevatorRef = React.createRef();
+        this.peopleContainerRef = React.createRef();
         this.height = 0;
+        this.currentFloor = props.numFloors;
+        this.destinationFloor = props.numFloors;
+        this.elevatorStatus = ElevatorStatus.IDLE;
+        this.baseDuration = 1500;
+        this.isMoving = false;
 
         if (numOfFloors < 2) throw new RangeError("numFloors must be at least 2");
 
@@ -35,13 +40,35 @@ export default class Elevator extends Component {
             this.state.floorMap.set(i, []);
             this.state.floors.push(i);
         }
+
+        let compare = (a, b) => { return a > b; }
+        this.upQueue = new FastPriorityQueue(compare);
+        this.downQueue = new FastPriorityQueue(compare);
+
+        this.upQueueProxyAdd = new Proxy(this.upQueue.add, {
+            apply: (target, thisArg, args) => {
+                target = target.bind(this.upQueue);
+                target(args[0]);
+                this.move();
+            }
+        });
+        
+        this.downQueueProxyAdd = new Proxy(this.downQueue.add, {
+            apply: (target, thisArg, args) => {
+                target = target.bind(this.downQueue);
+                target(args[0]);
+                this.move();
+            }
+        });
+        setInterval(() => { if (!this.isMoving) this.move(); }, 5000);
     }
+
 
     componentDidMount() {
         let elevatorHeight = document.getElementById('elevator-frame').clientHeight;
         let leftDoor = document.getElementById('left-door');
         let rightDoor = document.getElementById('right-door');
-        let topOffset = 0.21 * Math.floor(elevatorHeight);
+        let topOffset = 0.21 * elevatorHeight;
         let calculatedHeight = elevatorHeight - topOffset;
         // Position the doors
         leftDoor.style.height = `${calculatedHeight}px`;
@@ -84,101 +111,110 @@ export default class Elevator extends Component {
                         </div>
                     </div>
                 </div>
-                <PeopleContainer elevator={this}/>
+                <PeopleContainer ref={this.peopleContainerRef} elevator={this}/>
             </div>
         )
     }
 
     // Add Person to their respective floor
-    addPerson = (person) => {
+    addPerson = (name, floor) => {
+        let person = <Person name={name} currentFloorNum={floor} key={name} elevator={this} />;
         let floorNumber = parseInt(person.props.currentFloorNum.toString());
         let newPeopleMap = this.state.floorMap;
         newPeopleMap.get(floorNumber).push(person);
-        let newPeopleList = newPeopleMap.get(floorNumber);
+        let floorArray = newPeopleMap.get(floorNumber);
         this.setState({floorMap: newPeopleMap});
-        this.refsArray[floorNumber-1].update(newPeopleList);
+        this.refsArray[floorNumber-1].update(floorArray);
+        this.peopleContainerMap.set(person.props.name, person);
+        this.peopleContainerRef.current.update(this.peopleContainerMap);
+    }
+
+    // Remove person from floorMap and peopleContainer
+    removePerson = (person) => {
+        let floorNumber = parseInt(person.props.currentFloorNum.toString());
+        let newPeopleMap = this.state.floorMap;
+        let floorArray = newPeopleMap.get(floorNumber);
+        let position = 0;
+        floorArray.forEach((element, index) => {
+            if (element.props.name === person.props.name) {
+                position = index;
+                return;
+            }
+        });
+        // Take the person off the floor
+        floorArray.splice(position, 1);
+        this.setState({floorMap: newPeopleMap});
+        this.refsArray[floorNumber-1].update(floorArray);
+        // Remove person from people container
+        this.peopleContainerMap.delete(person.props.name);
+        this.peopleContainerRef.current.update(this.peopleContainerMap);
+        // Put the person in the elevator
+        let personComponent = <InsideElevatorPerson name={person.props.name} currentFloorNum={person.props.currentFloorNum} key={person.props.name}/>
+        this.insideElevatorMap.set(person.props.name, personComponent);
+        this.insideElevatorRef.current.update(this.insideElevatorMap);
     }
 
     addCall = (elevatorCall) => {
-        if(elevatorCall instanceof LandingCall) {
-            if (this.state.upQueue.isEmpty() && this.state.downQueue.isEmpty()) {
-                let direction = elevatorCall.direction;
-                if (direction === CallDirection.UP) {
-                    let newQueue = this.state.upQueue;
-                    newQueue.add(elevatorCall);
-                    this.setState({
-                        upQueue: newQueue
-                    });
-                }
-                else {
-                    let newQueue = this.state.downQueue;
-                    newQueue.add(elevatorCall);
-                    this.setState({
-                        downQueue: newQueue
-                    });
-                }
-                this.move(elevatorCall);
-            }
-        }
-        else if(elevatorCall instanceof CartCall) {
-
+        if (elevatorCall.direction === CallDirection.UP) {
+            this.elevatorStatus = ElevatorStatus.UP;
+            this.upQueueProxyAdd(elevatorCall);
         }
         else {
-            throw new TypeError("Invalid type for elevatorCall");
+            this.elevatorStatus = ElevatorStatus.DOWN;
+            this.downQueueProxyAdd(elevatorCall);
         }
     }
 
     // Move the elevator
-    move = async(elevatorCall) => {
-        if (elevatorCall instanceof LandingCall) {
-            this.state.destinationFloor = elevatorCall.person.props.currentFloorNum;
-            let diff = this.state.destinationFloor - this.state.currentFloor;
-            // Destination is current floor
-            if (diff === 0) {
-                await this.land();
-            }
-            // Destination is below current floor
-            else if (diff < 0) {
-                this.state.downQueue.poll();
-                await this.animateDown(Math.abs(diff));
-                await this.land();
-            }
-            // Destination is above current floor
-            else {
-                this.state.upQueue.poll();
-                await this.animateUp(diff);
-                await this.land();
-            }
-        } else if (elevatorCall instanceof CartCall) {
-
-        } else {
-            throw new TypeError("Invalid type for elevatorCall");
+    move = async() => {
+        if(this.upQueue.isEmpty() && this.downQueue.isEmpty()) {
+            this.elevatorStatus = ElevatorStatus.IDLE;
+            return;
         }
+        let currentQueue = this.elevatorStatus === ElevatorStatus.UP ? this.upQueue : this.downQueue;
+        let elevatorCall = currentQueue.poll();
+        this.destinationFloor = parseInt(elevatorCall.person.props.currentFloorNum);
+        let diff = this.destinationFloor - this.currentFloor;
+        
+        this.isMoving = true;
+        // Destination is below current floor
+        if (diff < 0) {
+            await this.animateDown(Math.abs(diff));
+        }
+        // Destination is above current floor
+        if (diff > 0) {
+            await this.animateUp(diff);
+        }
+        await this.land();
+        this.removePerson(elevatorCall.person);
+        this.isMoving = false;
     }
 
     land = async() => {
         await this.openDoors();
         await this.closeDoors();
-        this.setState({
-            currentFloor: this.state.destinationFloor
-        });
+        this.currentFloor = this.destinationFloor;
     }
 
     // Fix.... it goes from the original position not current position
     animateUp = (distance) => {
+        let currentPos = document.getElementById('elevator').getBoundingClientRect().top;
+        let offset = document.getElementById('elevator').offsetTop;
         return anime({
             targets: '#elevator',
-            translateY: -(distance * this.height + (distance * 10)),
-            duration: distance * 1000,
+            translateY: (currentPos - offset) - (distance * this.height + (distance * 10)),
+            duration: distance * this.baseDuration,
             easing: 'linear'
         }).finished;
     }
 
     animateDown = (distance) => {
+        let currentPos = document.getElementById('elevator').getBoundingClientRect().top;
+        let offset = document.getElementById('elevator').offsetTop;
         return anime({
             targets: '#elevator',
-            translateY: (distance * this.height + (distance * 10)),
-            duration: distance * 1000,
+            translateY: (currentPos - offset) + (distance * this.height + (distance * 10)),
+            duration: distance * this.baseDuration,
             easing: 'linear'
         }).finished;
     }
@@ -219,10 +255,5 @@ export default class Elevator extends Component {
         }).finished;
 
         return Promise.all([leftDoorAnimation, rightDoorAnimation]);
-    }
-
-    // Stop the elevator
-    stop() {
-
     }
 }
